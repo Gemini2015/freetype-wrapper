@@ -49,7 +49,6 @@ void idledisplay()
 		framesPerSecond = 0;
 		glutPostRedisplay();
 	}
-
 }
 
 void DrawCharacter(int penx, int peny, int size, unsigned long codepoint, int *advance)
@@ -183,7 +182,13 @@ void reshape(int w, int h)
 
 void InitFont()
 {
-	g_Font = new FTWRAPPER::Font("tuanzi", "../../media/fonts/tuanzi.ttf", 2048, 50, 1);
+	g_fm = new FTWRAPPER::FontManager();
+	if (g_fm == NULL)
+		return;
+	unsigned long fontID = 0;
+	if (g_fm->CreateFont("tuanzi", "../../media/fonts/tuanzi.ttf", 50, &fontID, 2048))
+		return;
+	g_Font = g_fm->GetFont(fontID);
 	if (g_Font)
 	{
 		g_Font->AddCodePointRange(33, 255);
@@ -220,8 +225,8 @@ int main(int argc, char** argv)
 	// 只有调用glutMainLoop，对于窗口的渲染才会生效
 	glutMainLoop();
 
-	if (g_Font)
-		delete g_Font;
+	if (g_fm)
+		delete g_fm;
 	return 0;
 }
 
